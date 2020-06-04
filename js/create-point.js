@@ -22,11 +22,13 @@ function getCities(event){
   stateSelect.value = event.target.options[indexOfSelectedState].text
 
   const url = `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${ufValue}/municipios`
+  citiesSelect.innerHTML = `<option value="">Selecione a Cidade</option>`
+  citiesSelect.disabled = true
   fetch(url)
     .then(res => res.json())
     .then(cities => {
       for (const city of cities) {
-        citiesSelect.innerHTML += `<option value="${city.id}">${city.nome}</option>`
+        citiesSelect.innerHTML += `<option value="${city.nome}">${city.nome}</option>`
       }
       citiesSelect.disabled = false
     })
@@ -35,3 +37,34 @@ function getCities(event){
 document
   .querySelector("select[name=uf]")
   .addEventListener("change", getCities)
+
+const itemsToCollect = document.querySelectorAll(".items-grid li")
+
+for( const item of itemsToCollect ){
+  item.addEventListener("click", handleSelectedItem)
+}
+
+let selectedItems = []
+let collectedItems = document.querySelector("[name=items]")
+function handleSelectedItem(event){
+  const itemLi = event.target
+  // toggle adiciona se tiver a classe e remove se ele ja tiver ela
+  itemLi.classList.toggle("selected")
+  const itemId = event.target.dataset.id
+  
+  const areadySelected = selectedItems.findIndex( item => {
+    return item === itemId //isso sera true ou false
+  })
+
+  if( areadySelected != -1 ){
+    const filteredItems = selectedItems.filter( item => {
+      return  item != itemId
+    } )
+    selectedItems = filteredItems
+  }else{
+    selectedItems.push(itemId)
+  }
+  collectedItems.value = selectedItems
+  
+
+}
